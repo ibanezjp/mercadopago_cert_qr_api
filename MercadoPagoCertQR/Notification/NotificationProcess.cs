@@ -30,12 +30,15 @@ namespace MercadoPagoCertQR.Notification
                 dynamic merchantOrder =
                     JsonConvert.DeserializeObject<dynamic>(json);
 
-                await cloudTable.ExecuteAsync(TableOperation.InsertOrReplace(new MerchantOrder
+                if (merchantOrder.status == "closed")
                 {
-                    RowKey = merchantOrder.external_reference,
-                    Json = json,
-                    PartitionKey = "qr"
-                }));
+                    await cloudTable.ExecuteAsync(TableOperation.InsertOrReplace(new MerchantOrder
+                    {
+                        RowKey = merchantOrder.external_reference,
+                        Json = json,
+                        PartitionKey = "qr"
+                    }));
+                }
             }
             else
             {
